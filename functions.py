@@ -402,21 +402,21 @@ def sum_digit(n):
 
 print(sum_digit(123)) # 6
 
-
 print("22. функция-генератор для чисел Фибоначчи будет выглядеть следующим образом:")
 
 
 def fib():
-   a, b = 0, 1
-   yield a
-   yield b
+    a, b = 0, 1
+    yield a
+    yield b
 
-   while True:
-       a, b = b, a + b
-       yield b
+    while b < 100:
+        a, b = b, a + b
+        yield b
+
 
 for num in fib():
-    print(num) #не запускать (будет бесконечная последовательность)
+    print(num)
 
 print("23. Создайте функцию-генератор, возвращающую бесконечную последовательность натуральных чисел. "
       "По умолчанию, она начинается с единицы и шагом 1, "
@@ -487,6 +487,474 @@ print(next(str_iter))  # s
 print(next(str_iter))  # t
 
 
+print("26. Сделаем функцию, которая будет выполнять принимаемую функцию дважды:")
 
 
+def twice_func(inside_func):
+    """Функция, выполняющая дважды функцию принятую в качестве аргумента"""
+    inside_func()
+    inside_func()
+
+
+def hello():
+    print("Hello")
+
+
+test = twice_func(hello)
+# Hello
+# Hello
+
+print("27. Сделаем функцию, которая будет возвращать функцию, всегда прибавляющую одно и тоже число x:")
+
+
+def make_adder(x):
+   def adder(n):
+       return x + n # захват переменной "x" из nonlocal области
+   return adder  # возвращение функции в качестве результата
+
+
+print("28. сделаем функцию, которая будет прибавлять число 5 к любому числу.")
+
+
+def make_adder(x):
+   def adder(n):
+       return x + n # захват переменной "x" из nonlocal области
+   return adder  # возвращение функции в качестве результата
+
+# функция, которая будет к любому числу прибавлять пятёрку
+add_5 = make_adder(5)
+print(add_5(10))  # 15
+print(add_5(100))  # 105
+
+
+print("29. добавить дополнительное поведение к основной функции.")
+
+
+def my_decorator(a_function_to_decorate):
+    # Здесь мы определяем новую функцию - «обертку». Она нам нужна, чтобы выполнять
+    # каждый раз при вызове оригинальной функции, а не только один раз
+    def wrapper():
+        # здесь поместим код, который будет выполняться до вызова, потом вызов
+        # оригинальной функции, потом код после вызова
+        print("Я буду выполнен до основного вызова!")
+
+        result = a_function_to_decorate()  # не забываем вернуть значение исходной функции
+
+        print("Я буду выполнен после основного вызова!")
+        return result
+
+    return wrapper
+def my_function():
+   print("Я - оборачиваемая функция!")
+   return 0
+
+print(my_function())
+# Я - оборачиваемая функция!
+# 0
+
+decorated_function = my_decorator(my_function)  # декорирование функции
+print(decorated_function())
+# Я буду выполнен до основного вызова!
+# Я - оборачиваемая функция!
+# Я буду выполнен после основного вызова!
+# 0
+
+
+print("30. замерить время выполнения системной функции "
+      "для возведения числа в степень 2 и соответствующего оператора.")
+
+
+def my_decorator(a_function_to_decorate):
+    # Здесь мы определяем новую функцию - «обертку». Она нам нужна, чтобы выполнять
+    # каждый раз при вызове оригинальной функции, а не только один раз
+    def wrapper():
+        # здесь поместим код, который будет выполняться до вызова, потом вызов
+        # оригинальной функции, потом код после вызова
+        print("Я буду выполнен до основного вызова!")
+
+        result = a_function_to_decorate()  # не забываем вернуть значение исходной функции
+
+        print("Я буду выполнен после основного вызова!")
+        return result
+
+    return wrapper
+def my_function():
+   print("Я - оборачиваемая функция!")
+   return 0
+
+print(my_function())
+# Я - оборачиваемая функция!
+# 0
+
+decorated_function = my_decorator(my_function)  # декорирование функции
+print(decorated_function())
+# Я буду выполнен до основного вызова!
+# Я - оборачиваемая функция!
+# Я буду выполнен после основного вызова!
+# 0
+
+import time
+
+
+def decorator_time(fn):
+   def wrapper():
+       print(f"Запустилась функция {fn}")
+       t0 = time.time()
+       dt = time.time() - t0
+       print(f"Функция выполнилась. Время: {dt:.10f}")
+       return dt  # задекорированная функция будет возвращать время работы
+   return wrapper
+
+
+def pow_2():
+   return 10000000 ** 2
+
+
+def in_build_pow():
+   return pow(10000000, 2)
+
+
+pow_2 = decorator_time(pow_2)
+in_build_pow = decorator_time(in_build_pow)
+
+pow_2()
+# Запустилась функция <function pow_2 at 0x7f938401b158>
+# Функция выполнилась. Время: 0.0000011921
+
+in_build_pow()
+# Запустилась функция <function in_build_pow at 0x7f938401b620>
+# Функция выполнилась. Время: 0.0000021458
+
+print("31 . Возьмите из предыдущего примера декорированные функции,"
+      "которые возвращают время работы основной функции "
+      "и найдите среднее время выполнения для 100 выполнений каждой функции.")
+
+
+import time
+
+N = 100
+
+
+def decorator_time(fn):
+   def wrapper():
+       t0 = time.time()
+       result = fn()
+       dt = time.time() - t0
+       return dt
+   return wrapper
+
+
+def pow_2():
+   return 10000000 ** 2
+
+
+def in_build_pow():
+   return pow(10000000, 2)
+
+
+pow_2 = decorator_time(pow_2)
+in_build_pow = decorator_time(in_build_pow)
+
+mean_pow_2 = 0
+mean_in_build_pow = 0
+for _ in range(N):
+   mean_pow_2 += pow_2()
+   mean_in_build_pow += in_build_pow()
+
+print(f"Функция {pow_2} выполнялась {N} раз. Среднее время: {mean_pow_2 / N:.10f}")
+print(f"Функция {in_build_pow} выполнялась {N} раз. Среднее время: {mean_in_build_pow / 100:.10f}")
+
+
+print("32 . Синтаксический сахар ")
+
+
+def my_decorator(fn):
+   def wrapper():
+       fn()
+   return wrapper  # возвращается задекорированная функция, которая заменяет исходную
+
+# выведем незадекорированную функцию
+def my_function():
+   pass
+print(my_function)  # <function my_function at 0x7f938401ba60>
+
+# выведем задекорированную функцию
+@my_decorator
+def my_function():
+   pass
+print(my_function)  # <function my_decorator.<locals>.wrapper at 0x7f93837059d8>
+
+
+print("33 . wrapper должен уметь принимать те же аргументы, "
+      "что и исходная функция и передавать их в неё. "
+      "Чтобы не задумываться над количеством аргументов и сделать наш декоратор универсальным,"
+      " мы будем использовать *args и **kwargs.")
+
+
+# декоратор, в котором встроенная функция умеет принимать аргументы
+def do_it_twice(func):
+   def wrapper(*args, **kwargs):
+       func(*args, **kwargs)
+       func(*args, **kwargs)
+   return wrapper
+
+@do_it_twice
+def say_word(word):
+   print(word)
+
+say_word("Oo!!!")
+# Oo!!!
+# Oo!!!
+
+print("34 . Вот универсальный шаблон для декоратора:")
+
+
+def my_decorator(fn):
+    print("Этот код будет выведен один раз в момент декорирования функции")
+    def wrapper(*args, **kwargs):
+        print('Этот код будет выполняться перед каждым вызовом функции')
+        result = fn(*args, **kwargs)
+        print('Этот код будет выполняться после каждого вызова функции')
+        return result
+    return wrapper
+
+print("35 . Напишите декоратор, который будет подсчитывать количество вызовов "
+      "декорируемой функции. Для хранения переменной, "
+      "содержащей количество вызовов, используйте nonlocal область декоратора.")
+
+
+def counter(func):
+   count = 0
+   def wrapper(*args, **kwargs):
+       nonlocal count
+       func(*args, **kwargs)
+       count += 1
+       print(f"Функция {func} была вызвана {count} раз")
+   return wrapper
+
+@counter
+def say_word(word):
+   print(word)
+
+say_word("Oo!!!")
+# Oo!!!
+# Функция <function say_word at 0x7f93836d47b8> была вызвана 1 раз
+
+say_word("Oo!!!")
+# Oo!!!
+# Функция <function say_word at 0x7f93836d47b8> была вызвана 2 раз
+
+
+print("36 . Напишите декоратор, который будет сохранять результаты выполнения "
+      "декорируемой функции в словаре. Словарь должен находиться в nonlocal области "
+      "в следующем формате: по ключу располагается аргумент функции, "
+      "по значению результат работы функции, например, {n: f(n)}. "
+      "И при повторном вызове функции будет брать значение из словаря, а не вычислять заново. "
+      "То есть словарь можно считать промежуточной памятью на время работы программы, "
+      "где будут храниться ранее вычисленные значения. Исходная функция, "
+      "которую нужно задекорировать имеет следующий вид "
+      "и выполняет простое умножение на число 123456789:")
+
+def f(n):
+   return n * 123456789
+def cache(func):
+   cache_dict = {}
+   def wrapper(num):
+       nonlocal cache_dict
+       if num not in cache_dict:
+           cache_dict[num] = func(num)
+           print(f"Добавление результата в кэш: {cache_dict[num]}")
+       else:
+           print(f"Возвращение результата из кэша: {cache_dict[num]}")
+       print(f"Кэш {cache_dict}")
+       return cache_dict[num]
+   return wrapper
+
+a = cache(f(2))
+print(a)
+
+print("37 . Чему будет равен результат работы функции? # 2*x = 9 print(linear_solve(2, 9))")
+
+def linear_solve(a, b):
+    return b/a
+
+# 2*x = 9
+print(linear_solve(2, 9)
+
+print("38 . Напишите функцию D(a,b,c), возвращающую дискриминант квадратного уравнения.")
+
+def D(a,b,c):
+    return b**2 - 4*a*c
+
+print('D = ',D(1,2,3))
+
+print("39 . Модифицируйте функцию quadratic_solve(a,b,c),"
+      " чтобы она возвращала единственный корень при условии нулевого дискриминанта.")
+
+def D(a,b,c):
+    return b**2 - 4*a*c
+
+def quadratic_solve(a,b,c):
+    if D(a,b,c) < 0:
+        return "Нет вещественных корней"
+    elif D(a,b,c) == 0:
+        return -b/(2*a)
+
+print(quadratic_solve(1,2,3))
+
+print("40 . нам нужно вернуть сразу два значения. Конечный вид функции будет выглядеть так:")
+
+def D(a,b,c):
+    return b**2 - 4*a*c
+
+def quadratic_solve(a,b,c):
+    if D(a,b,c) < 0:
+        return "Нет вещественных корней"
+    elif D(a,b,c) == 0:
+        return -b/(2*a)
+    else:
+        return (-b-D(a,b,c)**0.5)/(2*a), (-b+D(a,b,c)**0.5)/(2*a)
+
+print(quadratic_solve(8,9,12))
+
+print("41 . Напишите рекурсивную функцию, находящую минимальный элемент списка "
+      "без использование циклов и встроенной функции min().")
+K = [5,6,4,7,1]
+
+def min_list(L):
+    if len(L) == 1:
+        return L[0]
+    return L[0] if L[0] < min_list(L[1:]) else min_list(L[1:])
+
+print(min_list(K))
+
+
+print("42 . Напишите рекурсивную функцию, "
+      "которая зеркально разворачивает число. Предполагается, что число не содержит нули.")
+
+
+def mirror(a, res=0):
+    if a == 0:
+        return res
+    else:
+        return mirror(a // 10, res * 10 + a % 10)
+
+print(mirror(234))
+
+print("43 . реализовать функцию equal(N, S), проверяющую, "
+      "совпадает ли сумма цифр числа N с числом S. "
+      "При написании программы следует обратить внимание на то,"
+      "что, если S стала отрицательной, то необходимо сразу вернуть False.")
+
+
+def equal(N, S):
+    if S < 0:
+        return False
+    if N < 10:
+        return N == S
+    else:
+        return equal(N // 10, S - N % 10)
+
+print(equal(23,13))
+
+print("44 . Реализуйте функцию-генератор,"
+      " каждое значение которого — приближение числа e с некоторым числом n.")
+
+
+def e():
+    n = 1
+
+    while True:
+        yield (1 + 1 / n) ** n
+        n += 1
+
+print(e())
+
+
+print("45 . C помощью метода строки str.lower переведите все элементы списка в нижний регистр.")
+
+
+L = ['THIS', 'IS', 'LOWER', 'STRING']
+
+print(list(map(str.lower, L))) # ['this', 'is', 'lower', 'string']
+
+
+print("46 . Отфильтруйте из заданного списка только четные элементы.")
+
+x = [-2, -1, 0, 1, -3, 2, -3]
+
+def even(x):
+   return x % 2 == 0
+
+result = filter(even, [-2, -1, 0, 1, -3, 2, -3])
+
+print(list(result))   # [-2, 0, 2]
+
+
+print("47 . Возвести первые 10 натуральных чисел в квадрат c помощью lambda:")
+
+print(list(map(lambda x: x ** 2, range(1, 11))))  # правильно
+# [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
+
+
+print("48 .  Чтобы отсортировать словарь по ключам, нужно сделать так:")
+
+
+d = {2 : "c", 1 : "d", 4 : "a", 3 : "b"}
+
+print(dict(sorted(d.items())))  # {1: 'd', 2: 'c', 3: 'b', 4: 'a'}
+
+
+print("49 .  чтобы отсортировать словарь по значениям")
+
+
+d = {2 : "c", 1 : "d", 4 : "a", 3 : "b"}
+
+print(sorted(d.items(), key=lambda x: x[1]))  # сортировка по значению словаря
+
+
+
+print("50 .  Предположим у нас есть список с данными о росте и весе людей. "
+      "Задача — отсортировать их по индексу массы тела. Он вычисляется по формуле:"
+      " рост в метрах возвести в квадрат, "
+      "потом массу тела в килограммах разделить на полученную цифру.")
+
+# (вес, рост)
+data = [
+   (82, 191),
+   (68, 174),
+   (90, 189),
+   (73, 179),
+   (76, 184)
+]
+
+print(sorted(data, key=lambda x: x[0] / x[1] ** 2))
+
+
+print("51 .  Из списка в предыдущем задании найдите кортеж с минимальным индексом массы тела")
+
+
+# (вес, рост)
+data = [
+   (82, 191),
+   (68, 174),
+   (90, 189),
+   (73, 179),
+   (76, 184)
+]
+
+print(min(data, key=lambda x: x[0] / x[1] ** 2))  # отбор по ключу
+
+
+print("52 .  Факториал числа n")
+
+
+def fact(n):
+   if n == 0:
+      return 1
+   result = n*fact(n-1)
+   return result
+
+
+print(fact(4)) #24
 
