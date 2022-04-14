@@ -1,42 +1,35 @@
-print("8. работа с JSON файлами. Импорт модуля json.")
-
-import json
-
-with open('vebinar_files/json_example.json', encoding='utf8') as f:
-    strfile = f.read()
-    templates = json.loads(strfile)
-
-print(templates)
-print(type(templates))
+print("20. Модифицируйте алгоритм быстрой сортировки таким образом, "
+      "чтобы ведущий элемент выбирался как случайный среди подмассива, "
+      "который сортируется на данном этапе. Воспользуйтесь функцией из пакета random.")
+import random
 
 
-template = {
-    'firstname': 'Иван',
-    'lastname': 'Иванов',
-    'isAlive': True,
-    'age': 32,
-    'address': {
-        'streetAddress': 'Нейбута 32',
-        'city': 'Владивосток',
-        'state': '',
-        'postalcode': ''
-    },
-    'phoneNumbers': [
-        {
-            'type': 'mob',
-            'number': '123-333-4455'
-        },
-        {
-            'type': 'office',
-            'number': '123 111-4567'
-        }
-    ],
-    'children': [],
-    'spouse': None
-}
+def qsort_random(array, left, right):
+    p = random.choice(array[left:right + 1])
+    i, j = left, right
+    count = 0
+    while i <= j:
+        while array[i] < p:
+            i += 1
+        while array[j] > p:
+            j -= 1
+        if i <= j:
+            count += 1
+            array[i], array[j] = array[j], array[i]
+            i += 1
+            j -= 1
+    if j > left:
+        qsort_random(array, left, j)
+    if right > i:
+        qsort_random(array, i, right)
 
-with open('venv/to_json_example.json', 'w', encoding='utf8') as f:
-    json.dump(template, f, ensure_ascii=False, indent=4)
+array = [2, 3, 1, 4, 6, 5, 9, 8, 7]
 
-with open('venv/to_json_example.json', encoding='utf8') as f:
-    print(f.read())
+qsort_random(array, 0, len(array) - 1)
+print(array)
+
+
+
+
+
+
